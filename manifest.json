@@ -3,7 +3,7 @@
   "name": "IP Pública",
   "version": "0.1.0",
   "author": "vampirejsv \u003cvampirejsv@local\u003e",
-  "description": "IP Pública is a Ryoku shell plugin.",
+  "description": "Muestra la IP pública actual (consultando https://checkip.amazonaws.com/) en la barra; un clic la copia al portapapeles.",
   "license": "MIT",
   "official": false,
   "hosts": [
@@ -11,17 +11,19 @@
   ],
   "entryPoints": {
     "main": "service/Main.qml",
-    "content": "content/Widget.qml",
-    "panel": "content/Panel.qml"
+    "content": "content/Widget.qml"
   },
-  "panel": {
-    "width": 320
-  },
-  "files": [],
+  "files": [
+    "bin/poll.sh",
+    "bin/copy.sh"
+  ],
   "capabilities": {
     "densities": [
       "glyph",
       "compact"
+    ],
+    "network": [
+      "checkip.amazonaws.com"
     ]
   },
   "defaults": {
@@ -29,16 +31,21 @@
     "label": "IP Pública"
   },
   "dependencies": {
-    "commands": []
+    "commands": [
+      "curl",
+      "wl-copy"
+    ]
   },
   "metadata": {
     "settings": [
       {
-        "key": "showCount",
-        "type": "toggle",
-        "label": "Show the tick count",
+        "key": "pollSeconds",
+        "type": "int",
+        "label": "Intervalo de refresco (s)",
         "group": "IP Pública",
-        "default": true
+        "default": 60,
+        "min": 10,
+        "max": 600
       }
     ]
   }

@@ -1,40 +1,36 @@
 # IP Pública
 
-A Ryoku shell plugin (`public-ip`). This scaffold is a working demo: a counter that
-ticks once a second, a mark on the bar, and a panel with a RESET button. Edit it
-into your own widget.
+Ryoku shell plugin (`public-ip`): muestra la IP pública actual en la barra y,
+al hacer clic, la copia al portapapeles.
 
-## What it does
+## Qué hace
 
-- **Service** (`service/Main.qml`): the logic, no UI. Holds the live state the
-  views read through `pluginApi.mainInstance`.
-- **Widget** (`content/Widget.qml`): the one view the host mounts. A left click
-  toggles the panel; it never changes state.
-- **Panel** (`content/Panel.qml`): the bar panel the host renders under the
-  glyph when this plugin is on the bar.
+- **Servicio** (`service/Main.qml`): sondea `bin/poll.sh` cada `pollSeconds`
+  segundos (por defecto 60) y guarda la última lectura.
+- **Widget** (`content/Widget.qml`): muestra la IP (o `...`/`sin IP` mientras
+  no hay lectura). Un clic izquierdo llama a `bin/copy.sh` con la IP y
+  muestra brevemente «¡Copiada!». No abre ningún panel: es la única acción.
 
-## What it reads and writes
+## Qué lee y qué escribe
 
-The demo reads nothing off the machine and writes nothing. When you add real
-behaviour, keep to the rules in `AGENTS.md`: read settings through
-`pluginApi.pluginSettings` behind a default, write them only through
-`pluginApi.saveSetting(key, value)`, and write files only under
-`pluginApi.stateDir`. Every external command belongs in `bin/` or in
-`dependencies.commands`; every host you contact belongs in
-`capabilities.network`; a privileged action runs only through `pkexec` listed in
-`capabilities.privileged`.
+- **Red**: `bin/poll.sh` hace `curl` a `https://checkip.amazonaws.com/`
+  (único host, declarado en `capabilities.network`) y no envía nada más que
+  la petición GET estándar. No hay backend propio ni telemetría.
+- **Portapapeles**: `bin/copy.sh` recibe la IP como argumento (`argv`, nunca
+  interpolada en una cadena de shell) y la pasa a `wl-copy`. No escribe en
+  disco ni en ningún otro sitio.
+- No hay credenciales, tokens ni acciones privilegiadas.
 
-## Settings
+## Ajustes
 
-| key       | type   | default | description         |
-| --------- | ------ | ------- | ------------------- |
-| showCount | toggle | true    | Show the tick count |
+| key         | type | default | description                  |
+| ----------- | ---- | ------- | ----------------------------- |
+| pollSeconds | int  | 60      | Intervalo de refresco (segundos) |
 
 ## Preview
 
-Capture a real screenshot of the widget and save it as
-`assets/preview-widget.png`, then list it under `files` in `manifest.json`. The
-store shows it in the catalogue.
+Falta capturar `assets/preview-widget.png` y listarla en `manifest.json` si
+se quiere publicar en la store.
 
 ## Build, check, install
 
@@ -43,9 +39,8 @@ ryoku plugin validate .
 ryoku plugin add . --bar --yes
 ```
 
-It lists under **Community** in QS Bar Settings. Publish it only when you want
-to share it: `ryoku plugin share public-ip`.
+Aparece en la barra y bajo **QS Bar Settings > Community**.
 
-## Author
+## Autor
 
-vampirejsv <vampirejsv@local>: this plugin is community-made (`official` is false).
+vampirejsv <vampirejsv@local>: plugin comunitario (`official` es false).
